@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="shortcut icon" href="%PUBLIC_URL%/favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#000000" />
+    <!--
+      manifest.json provides metadata used when your web app is installed on a
+      user's mobile device or desktop. See https://developers.google.com/web/fundamentals/web-app-manifest/
+    -->
+    <link rel="manifest" href="%PUBLIC_URL%/manifest.json" />
+    <!--
+      Notice the use of %PUBLIC_URL% in the tags above.
+      It will be replaced with the URL of the `public` folder during the build.
+      Only files inside the `public` folder can be referenced from the HTML.
+
+      Unlike "/favicon.ico" or "favicon.ico", "%PUBLIC_URL%/favicon.ico" will
+      work correctly both with client-side routing and a non-root public URL.
+      Learn how to configure a non-root public URL by running `npm run build`.
+    -->
+    <script type="text/javascript">
+      var mPlayer = WowzaPlayer.create("playerElement", {
+        license: "PLAY1-kFNZ8-GfMZQ-7t4KM-deufW-YbXbm",
+        title: "",
+        description: "",
+        sources: [
+          {
+            sourceURL:
+              "https://d2zxuw9i9xwdti.cloudfront.net/novacast_live/ngrp:streamName_all/playlist.m3u8"
+          },
+          {
+            sourceURL:
+              "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+          }
+        ],
+        uiShowSeekBar: true,
+        startTime: 0,
+        autoPlay: false,
+        volume: "75",
+        mute: false,
+        loop: false,
+        audioOnly: false,
+        uiShowQuickRewind: true,
+        uiQuickRewindSeconds: "30"
+      });
+
+      document.querySelector(".logout").addEventListener("click", function() {
+        localStorage.removeItem("state");
+        mPlayer.stop();
+      });
+
+      let backup = false;
+      errorListener = function(errorEvent) {
+        console.log("Message from wowza player: " + errorEvent.error);
+      };
+      mPlayer.onError(errorListener);
+
+      playbackFailureListener = function(playbackEvent) {
+        console.log("Failure: " + playbackEvent.url);
+        mPlayer.setConfig({
+          sourceURL:
+            "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+        });
+        backup = true;
+        mPlayer.play();
+        mPlayer.onCompleted(switchSource);
+        mPlayer.onBitrateChanged(bitrateChangedListener);
+      };
+      mPlayer.onPlaybackFailure(playbackFailureListener);
+
+      switchSource = function(stopEvent) {
+        console.log("Time: " + stopEvent.time);
+        // document.getElementById(
+        //   "playerElement-OverlayAlertIcon"
+        // ).style.display = "none";
+        // document.getElementById(
+        //   "playerElement-OverlayAlertMessage"
+        // ).style.display = "none";
+
+        if (backup) {
+          backup = !backup;
+          console.log("run main;");
+
+          mPlayer = WowzaPlayer.create("playerElement", {
+            license: "PLAY1-kFNZ8-GfMZQ-7t4KM-deufW-YbXbm",
+            title: "",
+            description: "",
+            sources: [
+              {
+                sourceURL:
+                  "https://d2zxuw9i9xwdti.cloudfront.net/novacast_live/ngrp:streamName_all/playlist.m3u8"
+              },
+              {
+                sourceURL:
+                  "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+              }
+            ],
+            uiShowSeekBar: true,
+            startTime: 0,
+            autoPlay: true,
+            volume: "75",
+            mute: false,
+            loop: false,
+            audioOnly: false,
+            uiShowQuickRewind: true,
+            uiQuickRewindSeconds: "30"
+          });
+          mPlayer.onBitrateChanged(bitrateChangedListener);
+          mPlayer.onCompleted(switchSource);
+          //   mPlayer.setConfig({
+          //     sourceURL:
+          //       "https://d2zxuw9i9xwdti.cloudfront.net/novacast_live/ngrp:streamName_all/playlist.m3u8"
+          //   });
+          //   mPlayer.play();
+        } else {
+          console.log("run backup;");
+          backup = !backup;
+          //   mPlayer.setConfig({
+          //     sourceURL:
+          //       "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+          //   });
+          //   mPlayer.play();
+          mPlayer = WowzaPlayer.create("playerElement", {
+            license: "PLAY1-kFNZ8-GfMZQ-7t4KM-deufW-YbXbm",
+            title: "",
+            description: "",
+            sources: [
+              {
+                sourceURL:
+                  "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+              },
+              {
+                sourceURL:
+                  "https://d2zxuw9i9xwdti.cloudfront.net/novacast_live/ngrp:streamName_all/playlist.m3u8"
+              }
+            ],
+            uiShowSeekBar: true,
+            startTime: 0,
+            autoPlay: true,
+            volume: "75",
+            mute: false,
+            loop: false,
+            audioOnly: false,
+            uiShowQuickRewind: true,
+            uiQuickRewindSeconds: "30"
+          });
+          mPlayer.onBitrateChanged(bitrateChangedListener);
+          mPlayer.onCompleted(switchSource);
+        }
+      };
+
+      mPlayer.onCompleted(switchSource);
+
+      let counter = 0;
+      bitrateChangedListener = function(bitrateChangedEvent) {
+        console.log("Old bitrate: " + bitrateChangedEvent.oldBitrate);
+        console.log("New bitrate: " + bitrateChangedEvent.newBitrate);
+        if (bitrateChangedEvent.newBitrate < 250000 && backup) {
+          backup = !backup;
+          counter++;
+          mPlayer.setConfig({
+            sourceURL:
+              "https://d2zxuw9i9xwdti.cloudfront.net/novacast_live/ngrp:streamName_all/playlist.m3u8"
+          });
+          mPlayer.play();
+        } else if (bitrateChangedEvent.newBitrate < 250000 && !backup) {
+          counter++;
+          backup = !backup;
+          mPlayer.setConfig({
+            sourceURL:
+              "http://d2iicsfeaual4b.cloudfront.net/livehttporigin/ngrp:streamName_all/playlist.m3u8"
+          });
+          mPlayer.play();
+        }
+      };
+      mPlayer.onBitrateChanged(bitrateChangedListener);
+    </script>
+  </body>
+</html>

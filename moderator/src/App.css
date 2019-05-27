@@ -1,0 +1,22 @@
+.moderator-dashboard {
+  max-width: 1440px;
+  margin: auto;
+}
+header {
+  padding: 20px;
+  display: flex;
+  align-items: center;
+}
+header > img {
+  max-width: 63px;
+}
+.vertical-bar {
+  height: 30px;
+  margin: 0 20px;
+  width: 1px;
+  background: #000;
+}
+.heading-title {
+  font-size: 18px;
+  color: #000;
+}
