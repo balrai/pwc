@@ -20,3 +20,20 @@ header > img {
   font-size: 18px;
   color: #000;
 }
+.content {
+  max-width: 1440px;
+  margin: auto;
+}
+.left-box {
+  width: 10%;
+  display: inline-block;
+}
+.right-box {
+  width: 90%;
+  display: inline-block;
+}
+.tab {
+  padding: 10px 20px;
+  border: 1px solid #eeee;
+  cursor: pointer;
+}

@@ -190,7 +190,13 @@ class App extends Component {
           <div className="heading-title">CaTSH Partner Conference 2019</div>
         </header>
         <div className="content">
-          <div className="left-box" />
+          <div className="left-box">
+            <div className="pending tab">Pending</div>
+            <div className="apporoved tab">Approved</div>
+            <div className="rejected tab">Rejeted</div>
+            <div className="published tab">Published</div>
+            <div className="deleted tab">Deleted</div>
+          </div>
           <div className="right-box">
             <div className="right-box-static-content">Total</div>
             <DisplayPosts
